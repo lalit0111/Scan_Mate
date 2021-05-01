@@ -1,14 +1,10 @@
 package com.nativecoders.scanmate
 
-import android.content.Context
-import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.hardware.camera2.CameraAccessException
-import android.hardware.camera2.CameraManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.camerakit.CameraKit
@@ -20,22 +16,29 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
 
     lateinit var cameraKitView: CameraKitView
     lateinit var binding: FragmentCameraBinding
+    lateinit var mainActivity: MainActivity
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentCameraBinding.bind(view)
 
         cameraKitView = binding.camera
+        mainActivity = activity as MainActivity
 
         binding.capture.setOnClickListener {
-            cameraKitView.captureImage(object  : CameraKitView.ImageCallback{
+            cameraKitView.captureImage(object : CameraKitView.ImageCallback {
                 override fun onImage(p0: CameraKitView?, image: ByteArray?) {
                     val bitmap = BitmapFactory.decodeByteArray(image, 0, image!!.size)
                     Log.d("capture", image.toString())
                     binding.image.setImageBitmap(bitmap)
+                    mainActivity.images.add(bitmap)
+                    binding.imageCount.text = mainActivity.images.size.toString()
                 }
-
             })
+        }
+
+        binding.rotate.setOnClickListener {
+            cameraKitView.toggleFacing()
         }
 
         binding.image.setOnClickListener {
