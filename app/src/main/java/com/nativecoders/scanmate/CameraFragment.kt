@@ -1,9 +1,14 @@
 package com.nativecoders.scanmate
 
+import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.hardware.camera2.CameraAccessException
+import android.hardware.camera2.CameraManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import com.camerakit.CameraKit
 import com.camerakit.CameraKitView
@@ -22,20 +27,19 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
         cameraKitView = binding.camera
 
         binding.capture.setOnClickListener {
-            cameraKitView.captureImage { p0, image ->
-                val bitmap = BitmapFactory.decodeByteArray(image, 0, image!!.size)
-                Log.d("capture", image.toString())
-                binding.image.setImageBitmap(bitmap)
-            }
+            cameraKitView.captureImage(object  : CameraKitView.ImageCallback{
+                override fun onImage(p0: CameraKitView?, image: ByteArray?) {
+                    val bitmap = BitmapFactory.decodeByteArray(image, 0, image!!.size)
+                    Log.d("capture", image.toString())
+                    binding.image.setImageBitmap(bitmap)
+                }
+
+            })
         }
 
             binding.flash.setOnClickListener {
-                if (cameraKitView.flash == CameraKit.FLASH_OFF) {
-                    cameraKitView.flash = CameraKit.FLASH_ON
-                } else {
-                    cameraKitView.flash = CameraKit.FLASH_OFF
-                }
-                Log.d("flash", "on")
+                cameraKitView.flash = CameraKit.FLASH_ON
+                Log.d("flash", cameraKitView.hasFlash().toString())
             }
         }
 
