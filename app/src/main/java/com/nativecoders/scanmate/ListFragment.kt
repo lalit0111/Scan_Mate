@@ -14,15 +14,12 @@ import com.nativecoders.scanmate.databinding.FragmentListBinding
 class ListFragment : Fragment(R.layout.fragment_list) {
 
     lateinit var binding: FragmentListBinding
-    var images = ArrayList<Int>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentListBinding.bind(view)
-        images.add(R.drawable.img1)
-        images.add(R.drawable.img2)
-        images.add(R.drawable.img3)
 
+        var images = (activity as MainActivity).images
 
         binding.carouselView.apply {
             size = images.size
@@ -33,7 +30,7 @@ class ListFragment : Fragment(R.layout.fragment_list) {
             setCarouselViewListener { view, position ->
                 // Example here is setting up a full image carousel
                 val imageView = view.findViewById<ImageView>(R.id.listImageView)
-                imageView.setImageDrawable(resources.getDrawable(images[position]))
+                imageView.setImageBitmap(images[position])
             }
             // After you finish setting up, show the CarouselView
             show()
