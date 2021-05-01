@@ -42,11 +42,17 @@
         android:text="example.pdf"
         android:textColor="@color/black"
         android:textSize="18sp" />
-
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="1dp"
         app:cardBackgroundColor="#d3d3d3"
+        />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:menu="@menu/list_menu"
+
         />
 
 </LinearLayout>
