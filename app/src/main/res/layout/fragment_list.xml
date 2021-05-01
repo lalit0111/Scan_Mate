@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    tools:context=".ListFragment">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -47,6 +49,18 @@
         android:layout_height="1dp"
         app:cardBackgroundColor="#d3d3d3"
         />
+
+    <com.jama.carouselview.CarouselView
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="10dp"
+        app:indicatorRadius="3"
+        app:indicatorSelectedColor="@color/white"
+        app:indicatorUnselectedColor="#727272"
+        app:resource="@layout/list_card"
+        app:size="8" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:layout_width="match_parent"
