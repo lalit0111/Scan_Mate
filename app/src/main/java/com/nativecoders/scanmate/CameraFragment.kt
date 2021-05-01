@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.camerakit.CameraKit
 import com.camerakit.CameraKitView
 import com.nativecoders.scanmate.databinding.FragmentCameraBinding
@@ -35,6 +36,10 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
                 }
 
             })
+        }
+
+        binding.image.setOnClickListener {
+            findNavController().navigate(R.id.action_cameraFragment_to_listFragment)
         }
 
             binding.flash.setOnClickListener {
