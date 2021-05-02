@@ -73,4 +73,6 @@ dependencies {
     //image cropper
     implementation 'com.github.yalantis:ucrop:2.2.6-native'
 
+    implementation 'com.itextpdf:itextg:5.5.10'
+
 }

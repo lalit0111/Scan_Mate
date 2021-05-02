@@ -5,24 +5,29 @@ import `in`.balakrishnan.easycam.CameraControllerActivity
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.view.View
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.Nullable
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
+import com.itextpdf.text.Document
+import com.itextpdf.text.Image
+import com.itextpdf.text.pdf.PdfWriter
 import com.nativecoders.scanmate.databinding.FragmentListBinding
 import com.yalantis.ucrop.UCrop
 import com.yalantis.ucrop.model.AspectRatio
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
+import java.nio.ByteBuffer
 
 
 class ListFragment : Fragment(R.layout.fragment_list) {
@@ -38,6 +43,10 @@ class ListFragment : Fragment(R.layout.fragment_list) {
         binding = FragmentListBinding.bind(view)
 
         startCamera()
+
+        binding.savePdf.setOnClickListener {
+            ImageToPdf()
+        }
 
     }
 
@@ -79,7 +88,7 @@ class ListFragment : Fragment(R.layout.fragment_list) {
 
 
         private fun setUpViewPager() {
-            vAdapter = ListAdapter( (activity as MainActivity))
+            vAdapter = ListAdapter((activity as MainActivity))
             binding.viewPager.apply {
                 adapter = vAdapter
                 orientation = ViewPager2.ORIENTATION_HORIZONTAL
@@ -120,7 +129,10 @@ class ListFragment : Fragment(R.layout.fragment_list) {
                                 true
                             }
                             R.id.rotateImage -> {
-                                (activity as MainActivity).bitmapList[imagePosition] =  (activity as MainActivity).bitmapList[imagePosition].rotate(90f)
+                                (activity as MainActivity).bitmapList[imagePosition] =
+                                    (activity as MainActivity).bitmapList[imagePosition].rotate(
+                                        90f
+                                    )
                                 vAdapter.notifyDataSetChanged()
                                 true
                             }
@@ -143,7 +155,7 @@ class ListFragment : Fragment(R.layout.fragment_list) {
                     requireContext().contentResolver,
                     imageUri
                 )
-                (activity as MainActivity).bitmapList.add(0,bitmap)
+                (activity as MainActivity).bitmapList.add(0, bitmap)
                 vAdapter.notifyDataSetChanged()
             }
             else if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
@@ -157,7 +169,10 @@ class ListFragment : Fragment(R.layout.fragment_list) {
 
     private fun cropImage() {
         val option = UCrop.Options()
-        var uri = getImageUri(requireContext(),  (activity as MainActivity).bitmapList[imagePosition])
+        var uri = getImageUri(
+            requireContext(),
+            (activity as MainActivity).bitmapList[imagePosition]
+        )
         option.setAspectRatioOptions(
             2,
             AspectRatio("1:2", 1f, 2f),
@@ -194,5 +209,36 @@ class ListFragment : Fragment(R.layout.fragment_list) {
     fun Bitmap.rotate(degrees: Float): Bitmap {
         val matrix = Matrix().apply { postRotate(degrees) }
         return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
+    }
+
+    fun ImageToPdf(){
+        var document = Document()
+        val directoryPath = Environment.getExternalStorageDirectory().toString()
+        PdfWriter.getInstance(
+            document,
+            FileOutputStream("$directoryPath/mohit11.pdf")
+        )
+        document.open()
+
+        for(b in (activity as MainActivity).bitmapList){
+            val image:Image = Image.getInstance(b.toByteArray())
+            val scaler = (document.pageSize.width - document.leftMargin()
+                    - document.rightMargin() - 0) / image.width * 100 // 0 means you have no indentation. If you have any, change it.
+
+            image.scalePercent(scaler)
+            image.alignment = Image.ALIGN_CENTER or Image.ALIGN_TOP
+
+            document.add(image)
+        }
+        document.close()
+        Toast.makeText(requireContext(),"Saved",Toast.LENGTH_SHORT).show()
+
+    }
+
+    private fun Bitmap.toByteArray():ByteArray{
+        val size: Int = this.rowBytes * this.height
+        val byteBuffer = ByteBuffer.allocate(size)
+        this.copyPixelsToBuffer(byteBuffer)
+        return byteBuffer.array()
     }
 }
