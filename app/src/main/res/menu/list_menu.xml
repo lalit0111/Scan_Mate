@@ -21,9 +21,9 @@
         android:title="color"
         />
 
-    <item android:id="@+id/delteImage"
+    <item android:id="@+id/cropImage"
         android:icon="@drawable/ic_trash"
-        android:title="delete"
+        android:title="crop"
         />
 
 </menu>

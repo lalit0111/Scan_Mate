@@ -3,15 +3,13 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="8dp"
-  >
+    android:layout_margin="20dp">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/listImageView"
         android:layout_width="190dp"
-        android:layout_height="200dp"
+        android:layout_height="220dp"
         android:src="@color/blue"
-
-        />
+        android:scaleType="fitXY"/>
 
 </androidx.cardview.widget.CardView>
