@@ -1,11 +1,13 @@
 package com.nativecoders.scanmate
 
+import android.graphics.Bitmap
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.nativecoders.scanmate.databinding.ReorderListCardBinding
 
-class ReorderAdapter(var list:ArrayList<String> ) : RecyclerView.Adapter<ReorderAdapter.ViewHolder>() {
+class ReorderAdapter(var activity: MainActivity ) : RecyclerView.Adapter<ReorderAdapter.ViewHolder>() {
     class ViewHolder(var binding: ReorderListCardBinding) : RecyclerView.ViewHolder(binding.root)
 
 
@@ -18,21 +20,23 @@ class ReorderAdapter(var list:ArrayList<String> ) : RecyclerView.Adapter<Reorder
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
        holder.apply {
            binding.listImageView.apply {
-              // setImageResource(list[position])
+               setImageBitmap(activity.bitmapList[position])
            }
 
        }
     }
 
-    override fun getItemCount(): Int = list.size
+    override fun getItemCount(): Int = activity.bitmapList.size
 
     fun moveItem(from: Int, to: Int) {
-        val fromEmoji = list[from]
-        list.removeAt(from)
+        val fromEmoji = activity.bitmapList[from]
+        activity.bitmapList.removeAt(from)
         if (to < from) {
-            list.add(to, fromEmoji)
+            activity.bitmapList.add(to, fromEmoji)
         } else {
-            list.add(to - 1, fromEmoji)
+            activity.bitmapList.add(to - 1, fromEmoji)
         }
+
+        Log.d("images" , activity.bitmapList.toString())
     }
 }

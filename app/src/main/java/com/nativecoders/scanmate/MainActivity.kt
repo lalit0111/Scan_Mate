@@ -12,6 +12,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var navController: NavController
     lateinit var binding: ActivityMainBinding
+    lateinit var bitmapList:ArrayList<Bitmap>
 
     lateinit var images: ArrayList<Bitmap>
 
@@ -21,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         images = ArrayList()
-
+        bitmapList = ArrayList()
         navController = findNavController(R.id.nav_host_fragment)
     }
 

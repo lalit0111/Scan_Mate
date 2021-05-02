@@ -3,14 +3,12 @@ package com.nativecoders.scanmate
 import `in`.balakrishnan.easycam.CameraBundleBuilder
 import `in`.balakrishnan.easycam.CameraControllerActivity
 import android.app.Activity.RESULT_OK
-import android.app.WallpaperManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
-import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
@@ -20,9 +18,6 @@ import androidx.annotation.Nullable
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
-import com.jama.carouselview.enums.IndicatorAnimationType
-import com.jama.carouselview.enums.OffsetType
-import com.labters.documentscanner.helpers.ScannerConstants
 import com.nativecoders.scanmate.databinding.FragmentListBinding
 import com.yalantis.ucrop.UCrop
 import com.yalantis.ucrop.model.AspectRatio
@@ -31,13 +26,12 @@ import java.io.File
 
 
 class ListFragment : Fragment(R.layout.fragment_list) {
-
     lateinit var binding: FragmentListBinding
     private val PICK_IMAGE = 10
-    lateinit var  vAdapter:ListAdapter
-    var currentImg:Int = 0
+    lateinit var vAdapter: ListAdapter
+    var currentImg: Int = 0
     var imagePosition = 0
-    lateinit var bitmaps: ArrayList<Bitmap>
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -45,10 +39,9 @@ class ListFragment : Fragment(R.layout.fragment_list) {
 
         startCamera()
 
-
     }
 
-    fun chooseImgFromGallery(){
+    fun chooseImgFromGallery() {
         val getIntent = Intent(Intent.ACTION_GET_CONTENT)
         getIntent.type = "image/*"
 
@@ -61,8 +54,8 @@ class ListFragment : Fragment(R.layout.fragment_list) {
         startActivityForResult(chooserIntent, PICK_IMAGE)
     }
 
-    private fun startCamera(){
-        bitmaps = ArrayList()
+    private fun startCamera() {
+
 
         val intent = Intent(requireContext(), CameraControllerActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -82,73 +75,89 @@ class ListFragment : Fragment(R.layout.fragment_list) {
                 .createCameraBundle()
         )
         startActivityForResult(intent, 214)
-
-    private fun setUpViewPager(list: ArrayList<String>?) {
-        vAdapter = ListAdapter(list!!)
-        binding.viewPager.apply {
-            adapter = vAdapter
-            orientation = ViewPager2.ORIENTATION_HORIZONTAL
-
-        }
     }
 
-    override fun onActivityResult(
-        requestCode: Int,
-        resultCode: Int,
-        @Nullable data: Intent?
-    ) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 214) {
-            if (resultCode == RESULT_OK) {
-                assert(data != null)
-                var images = data!!.getStringArrayExtra("resultData")
-                var list = images?.toCollection(ArrayList())
-                setUpViewPager(list)
-                if (images != null) {
-                    for (item in images) {
-                        bitmaps.add(BitmapFactory.decodeFile(item))
-                    }
-                }
 
-
-                binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
-                    when (item.itemId) {
-                        R.id.reorderImage -> {
-                            findNavController().navigate(R.id.action_listFragment_to_reorderFragment)
-                            true
-                        }
-                        R.id.rotateImage -> {
-                            bitmaps[imagePosition] = bitmaps[imagePosition].rotate(90f)
-                            binding.carouselView.setCarouselViewListener { view, position ->
-                                val imageView = view.findViewById<ImageView>(R.id.listImageView)
-                                imageView.setImageBitmap(bitmaps[position])
-                                imagePosition = position
-                            }
-                            true
-                        }
-                        R.id.cropImage -> {
-                            cropImage()
-                            true
-                        }
-                        else -> false
+        private fun setUpViewPager(list: ArrayList<Bitmap>?) {
+            vAdapter = ListAdapter(list!!)
+            binding.viewPager.apply {
+                adapter = vAdapter
+                orientation = ViewPager2.ORIENTATION_HORIZONTAL
+                registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                    override fun onPageSelected(position: Int) {
+                        imagePosition = position
+                        super.onPageSelected(position)
                     }
-                }
-            }else if (requestCode == PICK_IMAGE) {
-                val imageUri: Uri? = data?.data
-                val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, imageUri)
-              }
+                })
             }
         }
-        if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
-            val resultUri = data?.let { UCrop.getOutput(it) }
-            val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, resultUri)
 
+
+        override fun onActivityResult(
+            requestCode: Int,
+            resultCode: Int,
+            @Nullable data: Intent?
+        ) {
+            super.onActivityResult(requestCode, resultCode, data)
+            if (requestCode == 214) {
+                if (resultCode == RESULT_OK) {
+                    assert(data != null)
+                    var images = data!!.getStringArrayExtra("resultData")
+                    var list = images?.toCollection(ArrayList())
+
+                    if (images != null) {
+                        for (item in images) {
+                            (activity as MainActivity).bitmapList.add(BitmapFactory.decodeFile(item))
+                        }
+                    }
+                    (activity as MainActivity).bitmapList =  (activity as MainActivity).bitmapList
+                    setUpViewPager( (activity as MainActivity).bitmapList)
+
+                    binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+                        when (item.itemId) {
+                            R.id.reorderImage -> {
+                                findNavController().navigate(R.id.action_listFragment_to_reorderFragment)
+                                true
+                            }
+                            R.id.rotateImage -> {
+                                (activity as MainActivity).bitmapList[imagePosition] =  (activity as MainActivity).bitmapList[imagePosition].rotate(90f)
+                                vAdapter.notifyDataSetChanged()
+                                true
+                            }
+                            R.id.cropImage -> {
+                                cropImage()
+                                true
+                            }
+                            R.id.addImage -> {
+                                chooseImgFromGallery()
+                                true
+                            }
+                            else -> false
+                        }
+                    }
+                }
+            }
+            else if (requestCode == PICK_IMAGE) {
+                val imageUri: Uri? = data?.data
+                val bitmap = MediaStore.Images.Media.getBitmap(
+                    requireContext().contentResolver,
+                    imageUri
+                )
+                (activity as MainActivity).bitmapList.add(0,bitmap)
+                vAdapter.notifyDataSetChanged()
+            }
+            else if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
+            val resultUri = data?.let { UCrop.getOutput(it) }
+            val bitmap =
+                MediaStore.Images.Media.getBitmap(requireContext().contentResolver, resultUri)
+                (activity as MainActivity).bitmapList[imagePosition] = bitmap
+            vAdapter.notifyDataSetChanged()
         }
     }
 
     private fun cropImage() {
         val option = UCrop.Options()
-        var uri = getImageUri(requireContext(),bitmaps[imagePosition])
+        var uri = getImageUri(requireContext(),  (activity as MainActivity).bitmapList[imagePosition])
         option.setAspectRatioOptions(
             2,
             AspectRatio("1:2", 1f, 2f),
@@ -158,7 +167,7 @@ class ListFragment : Fragment(R.layout.fragment_list) {
             AspectRatio("2:1", 2f, 1f)
         )
         if (uri != null) {
-            UCrop.of(uri,Uri.fromFile(File(requireContext().cacheDir, "Vision")))
+            UCrop.of(uri, Uri.fromFile(File(requireContext().cacheDir, "Vision")))
                 .withOptions(option)
                 .start(activity as MainActivity)
         } else {
@@ -170,24 +179,20 @@ class ListFragment : Fragment(R.layout.fragment_list) {
         }
     }
 
-        fun getImageUri(inContext: Context, inImage: Bitmap): Uri {
-            var bytes = ByteArrayOutputStream();
-            inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            var path = MediaStore.Images.Media.insertImage(
-                inContext.getContentResolver(),
-                inImage,
-                "Title",
-                null
-            );
-            return Uri.parse(path);
-        }
-
-        fun Bitmap.rotate(degrees: Float): Bitmap {
-            val matrix = Matrix().apply { postRotate(degrees) }
-            return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
-        }
-    }
+    fun getImageUri(inContext: Context, inImage: Bitmap): Uri {
+        var bytes = ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        var path = MediaStore.Images.Media.insertImage(
+            inContext.getContentResolver(),
+            inImage,
+            "Title",
+            null
+        );
+        return Uri.parse(path);
     }
 
-
+    fun Bitmap.rotate(degrees: Float): Bitmap {
+        val matrix = Matrix().apply { postRotate(degrees) }
+        return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
+    }
 }
