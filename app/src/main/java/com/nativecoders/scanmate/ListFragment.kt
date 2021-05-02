@@ -78,8 +78,8 @@ class ListFragment : Fragment(R.layout.fragment_list) {
     }
 
 
-        private fun setUpViewPager(list: ArrayList<Bitmap>?) {
-            vAdapter = ListAdapter(list!!)
+        private fun setUpViewPager() {
+            vAdapter = ListAdapter( (activity as MainActivity))
             binding.viewPager.apply {
                 adapter = vAdapter
                 orientation = ViewPager2.ORIENTATION_HORIZONTAL
@@ -111,7 +111,7 @@ class ListFragment : Fragment(R.layout.fragment_list) {
                         }
                     }
                     (activity as MainActivity).bitmapList =  (activity as MainActivity).bitmapList
-                    setUpViewPager( (activity as MainActivity).bitmapList)
+                    setUpViewPager()
 
                     binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
                         when (item.itemId) {

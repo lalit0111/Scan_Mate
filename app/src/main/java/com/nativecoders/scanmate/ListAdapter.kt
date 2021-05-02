@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nativecoders.scanmate.databinding.ListCardBinding
 import com.nativecoders.scanmate.databinding.ReorderListCardBinding
 
-class ListAdapter(var list:ArrayList<Bitmap> ) : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
+class ListAdapter(var activity: MainActivity) : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
     class ViewHolder(var binding: ListCardBinding) : RecyclerView.ViewHolder(binding.root)
 
 
@@ -21,14 +21,18 @@ class ListAdapter(var list:ArrayList<Bitmap> ) : RecyclerView.Adapter<ListAdapte
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
        holder.apply {
            binding.listImageView.apply {
-               setImageBitmap(list[position])
+               setImageBitmap(activity.bitmapList[position])
            }
-           val page = "${position + 1}/${list.size}"
+           val page = "${position + 1}/${activity.bitmapList.size}"
            binding.pageCount.text = page
+           binding.deleteImage.setOnClickListener {
+               activity.bitmapList.removeAt(position)
+               notifyDataSetChanged()
+           }
 
        }
     }
 
-    override fun getItemCount(): Int = list.size
+    override fun getItemCount(): Int = activity.bitmapList.size
 
 }
