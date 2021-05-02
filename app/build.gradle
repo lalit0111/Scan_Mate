@@ -77,4 +77,6 @@ dependencies {
 
     implementation 'net.alhazmy13.ImageFilters:library:0.1.2-beta'
 
+    implementation 'com.itextpdf:itextg:5.5.10'
+
 }

@@ -1,28 +1,37 @@
 package com.nativecoders.scanmate
 
-import android.R.attr
+import `in`.balakrishnan.easycam.CameraBundleBuilder
+import `in`.balakrishnan.easycam.CameraControllerActivity
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Matrix
 import android.net.Uri
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
-import android.widget.RadioGroup
+import android.widget.Toast
 import androidx.annotation.Nullable
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.textview.MaterialTextView
+import com.itextpdf.text.Document
+import com.itextpdf.text.Image
+import com.itextpdf.text.pdf.PdfWriter
 import com.nativecoders.scanmate.databinding.FragmentListBinding
 import com.theartofdev.edmodo.cropper.CropImage
 import com.yalantis.ucrop.UCrop
 import net.alhazmy13.imagefilter.ImageFilter
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.nio.ByteBuffer
 
 
 class ListFragment : Fragment(R.layout.fragment_list) {
@@ -163,6 +172,37 @@ class ListFragment : Fragment(R.layout.fragment_list) {
     fun Bitmap.rotate(degrees: Float): Bitmap {
         val matrix = Matrix().apply { postRotate(degrees) }
         return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
+    }
+
+    fun ImageToPdf(){
+        var document = Document()
+        val directoryPath = Environment.getExternalStorageDirectory().toString()
+        PdfWriter.getInstance(
+            document,
+            FileOutputStream("$directoryPath/mohit11.pdf")
+        )
+        document.open()
+
+        for(b in (activity as MainActivity).bitmapList){
+            val image:Image = Image.getInstance(b.toByteArray())
+            val scaler = (document.pageSize.width - document.leftMargin()
+                    - document.rightMargin() - 0) / image.width * 100 // 0 means you have no indentation. If you have any, change it.
+
+            image.scalePercent(scaler)
+            image.alignment = Image.ALIGN_CENTER or Image.ALIGN_TOP
+
+            document.add(image)
+        }
+        document.close()
+        Toast.makeText(requireContext(),"Saved",Toast.LENGTH_SHORT).show()
+
+    }
+
+    private fun Bitmap.toByteArray():ByteArray{
+        val size: Int = this.rowBytes * this.height
+        val byteBuffer = ByteBuffer.allocate(size)
+        this.copyPixelsToBuffer(byteBuffer)
+        return byteBuffer.array()
     }
 
     private fun setupBottomSheet() {
