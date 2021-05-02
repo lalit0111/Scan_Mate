@@ -40,7 +40,7 @@
         android:orientation="horizontal"
         android:weightSum="5"
         android:background="@color/black"
-        android:backgroundTint="#36000000">
+        android:backgroundTint="#26000000">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/openImage"
@@ -95,7 +95,6 @@
                 android:scaleType="centerCrop"/>
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/imageCount"
                 android:layout_width="15dp"
                 android:layout_height="15dp"
                 android:layout_gravity="top|end"
@@ -103,7 +102,7 @@
                 android:textSize="8sp"
                 android:gravity="center"
                 android:textStyle="bold"
-                android:text="0"
+                android:text="1"
                 android:background="@drawable/circle_background"/>
 
         </FrameLayout>
