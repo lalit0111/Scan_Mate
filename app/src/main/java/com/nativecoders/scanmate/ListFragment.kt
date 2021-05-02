@@ -1,16 +1,12 @@
 package com.nativecoders.scanmate
 
-import `in`.balakrishnan.easycam.CameraBundleBuilder
-import `in`.balakrishnan.easycam.CameraControllerActivity
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
@@ -26,10 +22,8 @@ import com.itextpdf.text.Image
 import com.itextpdf.text.pdf.PdfWriter
 import com.nativecoders.scanmate.databinding.FragmentListBinding
 import com.theartofdev.edmodo.cropper.CropImage
-import com.yalantis.ucrop.UCrop
 import net.alhazmy13.imagefilter.ImageFilter
 import java.io.ByteArrayOutputStream
-import java.io.File
 import java.io.FileOutputStream
 import java.nio.ByteBuffer
 
@@ -49,6 +43,10 @@ class ListFragment : Fragment(R.layout.fragment_list) {
         setUpViewPager()
         setupBottomSheet()
         originalBitmaps = ArrayList((activity as MainActivity).bitmapList)
+        
+        binding.savePdf.setOnClickListener { 
+            ImageToPdf()
+        }
 
         binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -70,7 +68,7 @@ class ListFragment : Fragment(R.layout.fragment_list) {
                     chooseImgFromGallery()
                     true
                 }
-                R.id.colorImage ->{
+                R.id.colorImage -> {
                     (activity as MainActivity).bottomSheetBehavior.isDraggable = false
                     (activity as MainActivity).bottomSheetBehavior.state =
                         BottomSheetBehavior.STATE_EXPANDED
@@ -138,7 +136,10 @@ class ListFragment : Fragment(R.layout.fragment_list) {
                 if (resultCode == RESULT_OK) {
                     val resultUri = result.uri
                     val bitmap =
-                        MediaStore.Images.Media.getBitmap(requireContext().contentResolver, resultUri)
+                        MediaStore.Images.Media.getBitmap(
+                            requireContext().contentResolver,
+                            resultUri
+                        )
                     Log.d("bitmap", bitmap.toString())
                     (activity as MainActivity).bitmapList[imagePosition] = bitmap
                     vAdapter.notifyDataSetChanged()
@@ -176,7 +177,7 @@ class ListFragment : Fragment(R.layout.fragment_list) {
 
     fun ImageToPdf(){
         var document = Document()
-        val directoryPath = Environment.getExternalStorageDirectory().toString()
+        val directoryPath = requireContext().getExternalFilesDir(null)?.absolutePath
         PdfWriter.getInstance(
             document,
             FileOutputStream("$directoryPath/mohit11.pdf")
@@ -184,7 +185,9 @@ class ListFragment : Fragment(R.layout.fragment_list) {
         document.open()
 
         for(b in (activity as MainActivity).bitmapList){
-            val image:Image = Image.getInstance(b.toByteArray())
+            val stream = ByteArrayOutputStream()
+            b.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            val image: Image = Image.getInstance(stream.toByteArray())
             val scaler = (document.pageSize.width - document.leftMargin()
                     - document.rightMargin() - 0) / image.width * 100 // 0 means you have no indentation. If you have any, change it.
 
@@ -194,7 +197,7 @@ class ListFragment : Fragment(R.layout.fragment_list) {
             document.add(image)
         }
         document.close()
-        Toast.makeText(requireContext(),"Saved",Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), "Saved", Toast.LENGTH_SHORT).show()
 
     }
 
@@ -235,7 +238,12 @@ class ListFragment : Fragment(R.layout.fragment_list) {
 
         greyscale.setOnClickListener {
             checked.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
-            greyscale.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_check_24, 0)
+            greyscale.setCompoundDrawablesWithIntrinsicBounds(
+                0,
+                0,
+                R.drawable.ic_baseline_check_24,
+                0
+            )
             checked = greyscale
             colorImage(ImageFilter.Filter.GRAY)
         }
@@ -249,7 +257,12 @@ class ListFragment : Fragment(R.layout.fragment_list) {
 
         average.setOnClickListener {
             checked.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
-            average.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_check_24, 0)
+            average.setCompoundDrawablesWithIntrinsicBounds(
+                0,
+                0,
+                R.drawable.ic_baseline_check_24,
+                0
+            )
             colorImage(ImageFilter.Filter.AVERAGE_BLUR)
         }
 
