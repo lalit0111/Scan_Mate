@@ -1,25 +1,30 @@
 package com.nativecoders.scanmate
 
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.nativecoders.scanmate.databinding.ListCardBinding
 import com.nativecoders.scanmate.databinding.ReorderListCardBinding
 
-class ReorderAdapter(var list:ArrayList<String> ) : RecyclerView.Adapter<ReorderAdapter.ViewHolder>() {
-    class ViewHolder(var binding: ReorderListCardBinding) : RecyclerView.ViewHolder(binding.root)
+class ListAdapter(var list:ArrayList<String> ) : RecyclerView.Adapter<ListAdapter.ViewHolder>() {
+    class ViewHolder(var binding: ListCardBinding) : RecyclerView.ViewHolder(binding.root)
 
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder= ViewHolder(
-        ReorderListCardBinding
+        ListCardBinding
             .inflate(LayoutInflater.from(parent.context), parent, false)
     )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
        holder.apply {
            binding.listImageView.apply {
-              // setImageResource(list[position])
+               val bitmap = BitmapFactory.decodeFile(list[position])
+               setImageBitmap(bitmap)
            }
+           val page = "${position + 1}/${list.size}"
+           binding.pageCount.text = page
 
        }
     }

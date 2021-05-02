@@ -21,11 +21,11 @@ class ReorderFragment : Fragment(R.layout.fragment_reorder) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentReorderBinding.bind(view)
-        var images = ArrayList<Int>()
-        images.add(R.drawable.img1)
-        images.add(R.drawable.img2)
-        images.add(R.drawable.img3)
-       reorderAdapter = ReorderAdapter(images)
+        var images = ArrayList<String>()
+        images.add("R.drawable.img1")
+        images.add("R.drawable.img2")
+        images.add("R.drawable.img3")
+      reorderAdapter = ReorderAdapter(images)
         binding.recView.apply {
             adapter = reorderAdapter
             layoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL)

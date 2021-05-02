@@ -1,16 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
     xmlns:app="http://schemas.android.com/apk/res-auto"
   >
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/listImageView"
         android:layout_width="300dp"
         android:layout_height="500dp"
+        android:scaleType="fitXY"
         android:src="@color/blue"
-        android:layout_margin="10dp"
+        />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/deleteImage"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:paddingBottom="4dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="x"
+            android:layout_gravity="end"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:background="@drawable/circle_background"
+            />
+
+    </FrameLayout>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/pageCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1/20"
+        android:textSize="18sp"
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="16dp"
         />
 
-</androidx.cardview.widget.CardView>
+</LinearLayout>
