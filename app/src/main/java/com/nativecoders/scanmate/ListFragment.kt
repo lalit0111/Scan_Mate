@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.navigation.fragment.findNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.jama.carouselview.CarouselView
 import com.jama.carouselview.enums.IndicatorAnimationType
 import com.jama.carouselview.enums.OffsetType
@@ -28,13 +30,21 @@ class ListFragment : Fragment(R.layout.fragment_list) {
             indicatorAnimationType = IndicatorAnimationType.THIN_WORM
             carouselOffset = OffsetType.CENTER
             setCarouselViewListener { view, position ->
-                // Example here is setting up a full image carousel
                 val imageView = view.findViewById<ImageView>(R.id.listImageView)
                 imageView.setImageBitmap(images[position])
             }
-            // After you finish setting up, show the CarouselView
             show()
         }
+        binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when(item.itemId) {
+                R.id.reorderImage -> {
+                    findNavController().navigate(R.id.action_listFragment_to_reorderFragment)
+                    true
+                }
+                else -> false
+            }
+        }
     }
+
 
 }

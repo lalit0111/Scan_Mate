@@ -64,4 +64,9 @@ dependencies {
     //viewpagerSwipe
     implementation 'com.github.jama5262:CarouselView:1.1.0'
 
+    //Easy Cam
+    implementation 'in.balakrishnan.easycam:easycam:0.0.3-rc7'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-rc03'
+
 }

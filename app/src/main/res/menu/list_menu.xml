@@ -2,26 +2,28 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/addImage"
-        android:icon="@drawable/add_image"
-        android:title="Add Image"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_image_24"
+        android:title="Add"
         />
     <item android:id="@+id/reorderImage"
+        android:enabled="true"
         android:icon="@drawable/ic_action_name"
-        android:title="rorder Image"
+        android:title="reorder"
         />
 
     <item android:id="@+id/rotateImage"
         android:icon="@drawable/ic_rotate_ccw"
-        android:title="rotate Image"
+        android:title="rotate"
         />
     <item android:id="@+id/colorImage"
         android:icon="@drawable/ic_droplet"
-        android:title="color Image"
+        android:title="color"
         />
 
     <item android:id="@+id/delteImage"
         android:icon="@drawable/ic_trash"
-        android:title="delete Image"
+        android:title="delete"
         />
 
 </menu>
