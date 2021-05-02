@@ -1,5 +1,6 @@
 package com.nativecoders.scanmate
 
+import `in`.balakrishnan.easycam.FileUtils
 import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -22,5 +23,10 @@ class MainActivity : AppCompatActivity() {
         images = ArrayList()
 
         navController = findNavController(R.id.nav_host_fragment)
+    }
+
+    override fun onDestroy() {
+        FileUtils.clearAllFiles(this, localClassName);
+        super.onDestroy()
     }
 }
