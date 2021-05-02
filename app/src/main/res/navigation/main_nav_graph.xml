@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_listFragment_to_reorderFragment"
             app:destination="@id/reorderFragment" />
+        <action
+            android:id="@+id/action_listFragment_self"
+            app:destination="@id/listFragment" />
     </fragment>
     <fragment
         android:id="@+id/reorderFragment"

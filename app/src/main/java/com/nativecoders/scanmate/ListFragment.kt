@@ -1,35 +1,35 @@
 package com.nativecoders.scanmate
 
-import `in`.balakrishnan.easycam.CameraBundleBuilder
-import `in`.balakrishnan.easycam.CameraControllerActivity
+import android.R.attr
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.RadioGroup
 import androidx.annotation.Nullable
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.textview.MaterialTextView
 import com.nativecoders.scanmate.databinding.FragmentListBinding
+import com.theartofdev.edmodo.cropper.CropImage
 import com.yalantis.ucrop.UCrop
-import com.yalantis.ucrop.model.AspectRatio
+import net.alhazmy13.imagefilter.ImageFilter
 import java.io.ByteArrayOutputStream
-import java.io.File
 
 
 class ListFragment : Fragment(R.layout.fragment_list) {
     lateinit var binding: FragmentListBinding
     private val PICK_IMAGE = 10
     lateinit var vAdapter: ListAdapter
-    var currentImg: Int = 0
+    lateinit var originalBitmaps : ArrayList<Bitmap>
     var imagePosition = 0
 
 
@@ -37,8 +37,48 @@ class ListFragment : Fragment(R.layout.fragment_list) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentListBinding.bind(view)
 
-        startCamera()
+        setUpViewPager()
+        setupBottomSheet()
+        originalBitmaps = ArrayList((activity as MainActivity).bitmapList)
 
+        binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.reorderImage -> {
+                    findNavController().navigate(R.id.action_listFragment_to_reorderFragment)
+                    true
+                }
+                R.id.rotateImage -> {
+                    (activity as MainActivity).bitmapList[imagePosition] =
+                        (activity as MainActivity).bitmapList[imagePosition].rotate(90f)
+                    vAdapter.notifyDataSetChanged()
+                    true
+                }
+                R.id.cropImage -> {
+                    cropImage()
+                    true
+                }
+                R.id.addImage -> {
+                    chooseImgFromGallery()
+                    true
+                }
+                R.id.colorImage ->{
+                    (activity as MainActivity).bottomSheetBehavior.isDraggable = false
+                    (activity as MainActivity).bottomSheetBehavior.state =
+                        BottomSheetBehavior.STATE_EXPANDED
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
+    fun colorImage(imageFilter: ImageFilter.Filter?){
+        var  bitmap = originalBitmaps[imagePosition]
+        if(imageFilter != null){
+            bitmap = ImageFilter.applyFilter(originalBitmaps[imagePosition], imageFilter)
+        }
+        (activity as MainActivity).bitmapList[imagePosition] = bitmap
+        vAdapter.notifyDataSetChanged()
     }
 
     fun chooseImgFromGallery() {
@@ -54,43 +94,19 @@ class ListFragment : Fragment(R.layout.fragment_list) {
         startActivityForResult(chooserIntent, PICK_IMAGE)
     }
 
-    private fun startCamera() {
-
-
-        val intent = Intent(requireContext(), CameraControllerActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
-        intent.putExtra(
-            "inputData", CameraBundleBuilder()
-                .setFullscreenMode(true)
-                .setSinglePhotoMode(false)
-                .setEnableDone(false)
-                .setCaptureButtonDrawable(R.drawable.group_1)
-                .setMax_photo(50)
-                .setManualFocus(false)
-                .setBucketName(javaClass.name)
-                .setPreviewEnableCount(true)
-                .setPreviewIconVisiblity(true)
-                .setPreviewPageRedirection(true)
-                .setClearBucket(true)
-                .createCameraBundle()
-        )
-        startActivityForResult(intent, 214)
-    }
-
-
-        private fun setUpViewPager() {
-            vAdapter = ListAdapter( (activity as MainActivity))
-            binding.viewPager.apply {
-                adapter = vAdapter
-                orientation = ViewPager2.ORIENTATION_HORIZONTAL
-                registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                    override fun onPageSelected(position: Int) {
-                        imagePosition = position
-                        super.onPageSelected(position)
-                    }
-                })
-            }
+    private fun setUpViewPager() {
+        vAdapter = ListAdapter(activity as MainActivity)
+        binding.viewPager.apply {
+            adapter = vAdapter
+            orientation = ViewPager2.ORIENTATION_HORIZONTAL
+            registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    imagePosition = position
+                    super.onPageSelected(position)
+                }
+            })
         }
+    }
 
 
         override fun onActivityResult(
@@ -99,84 +115,37 @@ class ListFragment : Fragment(R.layout.fragment_list) {
             @Nullable data: Intent?
         ) {
             super.onActivityResult(requestCode, resultCode, data)
-            if (requestCode == 214) {
-                if (resultCode == RESULT_OK) {
-                    assert(data != null)
-                    var images = data!!.getStringArrayExtra("resultData")
-                    var list = images?.toCollection(ArrayList())
-
-                    if (images != null) {
-                        for (item in images) {
-                            (activity as MainActivity).bitmapList.add(BitmapFactory.decodeFile(item))
-                        }
-                    }
-                    (activity as MainActivity).bitmapList =  (activity as MainActivity).bitmapList
-                    setUpViewPager()
-
-                    binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
-                        when (item.itemId) {
-                            R.id.reorderImage -> {
-                                findNavController().navigate(R.id.action_listFragment_to_reorderFragment)
-                                true
-                            }
-                            R.id.rotateImage -> {
-                                (activity as MainActivity).bitmapList[imagePosition] =  (activity as MainActivity).bitmapList[imagePosition].rotate(90f)
-                                vAdapter.notifyDataSetChanged()
-                                true
-                            }
-                            R.id.cropImage -> {
-                                cropImage()
-                                true
-                            }
-                            R.id.addImage -> {
-                                chooseImgFromGallery()
-                                true
-                            }
-                            else -> false
-                        }
-                    }
-                }
-            }
-            else if (requestCode == PICK_IMAGE) {
+            if (requestCode == PICK_IMAGE) {
                 val imageUri: Uri? = data?.data
                 val bitmap = MediaStore.Images.Media.getBitmap(
                     requireContext().contentResolver,
                     imageUri
                 )
-                (activity as MainActivity).bitmapList.add(0,bitmap)
+                (activity as MainActivity).bitmapList.add(0, bitmap)
                 vAdapter.notifyDataSetChanged()
             }
-            else if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
-            val resultUri = data?.let { UCrop.getOutput(it) }
-            val bitmap =
-                MediaStore.Images.Media.getBitmap(requireContext().contentResolver, resultUri)
-                (activity as MainActivity).bitmapList[imagePosition] = bitmap
-            vAdapter.notifyDataSetChanged()
-        }
+            if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+                val result = CropImage.getActivityResult(data)
+                if (resultCode == RESULT_OK) {
+                    val resultUri = result.uri
+                    val bitmap =
+                        MediaStore.Images.Media.getBitmap(requireContext().contentResolver, resultUri)
+                    Log.d("bitmap", bitmap.toString())
+                    (activity as MainActivity).bitmapList[imagePosition] = bitmap
+                    vAdapter.notifyDataSetChanged()
+                } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                    val error = result.error
+                }
+            }
     }
 
     private fun cropImage() {
-        val option = UCrop.Options()
-        var uri = getImageUri(requireContext(),  (activity as MainActivity).bitmapList[imagePosition])
-        option.setAspectRatioOptions(
-            2,
-            AspectRatio("1:2", 1f, 2f),
-            AspectRatio("3:4", 3f, 4f),
-            AspectRatio("Default", 9f, 16f),
-            AspectRatio("4:3", 4f, 3f),
-            AspectRatio("2:1", 2f, 1f)
+        var uri = getImageUri(
+            requireContext(),
+            (activity as MainActivity).bitmapList[imagePosition]
         )
-        if (uri != null) {
-            UCrop.of(uri, Uri.fromFile(File(requireContext().cacheDir, "Vision")))
-                .withOptions(option)
-                .start(activity as MainActivity)
-        } else {
-            Toast.makeText(
-                requireContext(),
-                "Wait for loading to complete then try again.",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
+        CropImage.activity(uri)
+            .start(requireContext(), this);
     }
 
     fun getImageUri(inContext: Context, inImage: Bitmap): Uri {
@@ -195,4 +164,73 @@ class ListFragment : Fragment(R.layout.fragment_list) {
         val matrix = Matrix().apply { postRotate(degrees) }
         return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
     }
+
+    private fun setupBottomSheet() {
+
+        val cancel = (activity as MainActivity).findViewById<MaterialTextView>(R.id.sortTv)
+        val none = (activity as MainActivity).findViewById<MaterialTextView>(R.id.none)
+        val greyscale = (activity as MainActivity).findViewById<MaterialTextView>(R.id.greyscale)
+        val relief =
+            (activity as MainActivity).findViewById<MaterialTextView>(R.id.relief)
+        val average = (activity as MainActivity).findViewById<MaterialTextView>(R.id.average_blur)
+        val neon =
+            (activity as MainActivity).findViewById<MaterialTextView>(R.id.neon)
+        val oil = (activity as MainActivity).findViewById<MaterialTextView>(R.id.oil)
+
+        var checked = none
+        greyscale.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+        relief.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+        average.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+        neon.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+        oil.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+
+        none.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_check_24, 0)
+
+        none.setOnClickListener {
+            checked.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+            none.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_check_24, 0)
+            checked = none
+            colorImage(null)
+        }
+
+        greyscale.setOnClickListener {
+            checked.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+            greyscale.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_check_24, 0)
+            checked = greyscale
+            colorImage(ImageFilter.Filter.GRAY)
+        }
+
+        relief.setOnClickListener {
+            checked.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+            relief.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_check_24, 0)
+            checked = relief
+            colorImage(ImageFilter.Filter.RELIEF)
+        }
+
+        average.setOnClickListener {
+            checked.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+            average.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_check_24, 0)
+            colorImage(ImageFilter.Filter.AVERAGE_BLUR)
+        }
+
+        neon.setOnClickListener {
+            checked.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+            neon.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_check_24, 0)
+            checked = neon
+            colorImage(ImageFilter.Filter.NEON)
+        }
+
+        oil.setOnClickListener {
+            checked.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+            oil.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_check_24, 0)
+            checked = oil
+            colorImage(ImageFilter.Filter.OIL)
+        }
+
+        cancel.setOnClickListener {
+            (activity as MainActivity).bottomSheetBehavior.state =
+                BottomSheetBehavior.STATE_COLLAPSED
+        }
+    }
+
 }

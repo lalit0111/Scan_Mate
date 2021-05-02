@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/filterBottomSheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:clickable="true"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="0dp"
+    android:focusable="true"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/sortTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_cancel"
+        android:elevation="10dp"
+        android:fontFamily="@font/lato_black"
+        android:paddingVertical="20dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="10dp"
+        android:text="Filter"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        app:cardBackgroundColor="#d3d3d3"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="0dp"
+        app:layout_constraintTop_toBottomOf="@id/sortTv" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/none"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:drawableEnd="@drawable/ic_baseline_check_24"
+        android:paddingVertical="5dp"
+        android:paddingEnd="20dp"
+        android:text="None"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:fontFamily="@font/lato"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/line" />
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/greyscale"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:drawableEnd="@drawable/ic_baseline_check_24"
+        android:paddingVertical="5dp"
+        android:paddingEnd="20dp"
+        android:text="GreyScale"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:fontFamily="@font/lato"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/none" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/relief"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:paddingVertical="5dp"
+        android:paddingEnd="20dp"
+        android:text="Relief"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:fontFamily="@font/lato"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/greyscale" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/average_blur"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:paddingVertical="5dp"
+        android:paddingEnd="20dp"
+        android:text="Average Blur"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:fontFamily="@font/lato"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/relief" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/neon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:paddingVertical="5dp"
+        android:paddingEnd="20dp"
+        android:text="Neon"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:fontFamily="@font/lato"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/average_blur" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/oil"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:paddingVertical="5dp"
+        android:paddingEnd="20dp"
+        android:text="Oil"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:fontFamily="@font/lato"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/neon" />
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
